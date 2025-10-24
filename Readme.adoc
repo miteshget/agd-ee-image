@@ -6,7 +6,7 @@
 == Overview
 
 This guide explains how to build a **custom AgnosticD Execution Environment (EE)** image using a secure `ubi9` base.  
-You’ll learn how to clone the repository, modify configuration files, inject authentication tokens, and push the final image to **quay.io**.
+You'll learn how to clone the repository, modify configuration files, inject authentication tokens, and push the final image to **quay.io**.
 
 == Prerequisites
 
@@ -18,22 +18,26 @@ You’ll learn how to clone the repository, modify configuration files, inject a
 == Steps to Build the Custom EE Image
 
 === Step 1: Clone the AgnosticD Repository
-
-```bash
+----
 git clone https://github.com/redhat-cop/agnosticd.git
+----
+
 === Step 2: Navigate to the EE Build Directory
 
-bash
-Copy code
+----
 cd agnosticd/tools/execution_environments/ee-multicloud-public
+----
+
 === Step 3: Replace the Containerfile
 
 Replace the existing Containerfile content with your preferred version.
 For secure builds, the Containerfile-ubi9-secure template is recommended.
 
-bash
-Copy code
+
+----
 cp Containerfile-ubi9-secure Containerfile
+----
+
 === Step 4: Replace requirements.yml
 
 Ensure your requirements.yml contains the necessary Ansible collections and roles required for your environment.
@@ -44,46 +48,62 @@ Update the ansible.cfg file to include any custom configurations, such as Galaxy
 
 == Authentication Tokens
 
-You’ll need two tokens to access Ansible Certified and Validated content.
+You'll need two tokens to access Ansible Certified and Validated content.
 
 [NOTE]
 Obtain both tokens by logging in to https://console.redhat.com.
 You can use a single token for both variables if applicable.
+
 === Step 6: Export Tokens
 
-bash
-Copy code
+
+----
+
 export AAP_CERTIFIED_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 export AAP_VALIDATED_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+----
+
 == Build the EE Image
 
 === Step 7: Build the Image
 
-bash
-Copy code
+
+----
+
 podman build . -t test \
   --build-arg ANSIBLE_GALAXY_SERVER_CERTIFIED_TOKEN=${AAP_CERTIFIED_TOKEN} \
   --build-arg ANSIBLE_GALAXY_SERVER_VALIDATED_TOKEN=${AAP_VALIDATED_TOKEN}
+----
+
 == Tag, Verify, and Push the Image
 
 === Step 8: Tag the Image
 
-bash
-Copy code
+
+
+----
 export ee_tag=2.1.0
 podman tag localhost/test:latest quay.io/agnosticd/ee-ubi9-aap2.5:${ee_tag}
+----
+
 === Step 9: Verify and Clean Up
 
-bash
-Copy code
+
+----
+
 podman images
 podman image prune
+----
+
 === Step 10: Push to Quay.io
 
-bash
-Copy code
+----
+
+
 podman login quay.io
 podman push quay.io/agnosticd/ee-ubi9-aap2.5:${ee_tag}
+----
+
 == Verification
 
 Once pushed, verify your image on Quay.io under your repository:
@@ -91,7 +111,7 @@ Once pushed, verify your image on Quay.io under your repository:
 
 == Summary
 
-You’ve successfully:
+You've successfully:
 
 Cloned the AgnosticD repository
 
