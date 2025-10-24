@@ -83,7 +83,8 @@ podman build . -t test \
 
 ----
 export ee_tag=2.1.0
-podman tag localhost/test:latest quay.io/agnosticd/ee-ubi9-aap2.5:${ee_tag}
+export repo_name=xxxxxxxx
+podman tag localhost/test:latest quay.io/${repo_name}/ee-ubi9-aap2.5:${ee_tag}
 ----
 
 === Step 9: Verify and Clean Up
@@ -101,13 +102,13 @@ podman image prune
 
 
 podman login quay.io
-podman push quay.io/agnosticd/ee-ubi9-aap2.5:${ee_tag}
+podman push quay.io/${repo_name}/ee-ubi9-aap2.5:${ee_tag}
 ----
 
 == Verification
 
 Once pushed, verify your image on Quay.io under your repository:
-👉 https://quay.io/xxxxxxxx/ee-ubi9-aap2.5
+👉 https://quay.io/${repo_name}/ee-ubi9-aap2.5
 
 == Summary
 
