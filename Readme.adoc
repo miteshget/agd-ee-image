@@ -1,22 +1,27 @@
+= Build Custom AgD EE Image
 
-step1: git clone https://github.com/redhat-cop/agnosticd.git
-step2: cd agnosticd/tools/execution_environments/ee-multicloud-public
-step3: Replace Containerfile content (Containerfile-ubi9-secure is good)
-step4: Replace requirements.yml
-step5: Replace ansible.cfg content
+. step1: git clone https://github.com/redhat-cop/agnosticd.git
+. step2: cd agnosticd/tools/execution_environments/ee-multicloud-public
+. step3: Replace Containerfile content (Containerfile-ubi9-secure is good)
+. step4: Replace requirements.yml
+. step5: Replace ansible.cfg content
 
-NOTE: Get token login to console.redhat.com (one token for both vars)
-      Run following cmd
++
+NOTE: Get token login to console.redhat.com (one token for both vars)       Run following cmd
 
-step7:
-      export AAP_CERTIFIED_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-step8:
-      export AAP_VALIDATED_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+. step7:
++
+export AAP_CERTIFIED_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-step9: podman build . -t test --build-arg ANSIBLE_GALAXY_SERVER_CERTIFIED_TOKEN=${AAP_CERTIFIED_TOKEN} --build-arg ANSIBLE_GALAXY_SERVER_VALIDATED_TOKEN=${AAP_VALIDATED_TOKEN}
+. step8:
++
+export AAP_VALIDATED_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+. step9: podman build . -t test --build-arg ANSIBLE_GALAXY_SERVER_CERTIFIED_TOKEN=${AAP_CERTIFIED_TOKEN} --build-arg ANSIBLE_GALAXY_SERVER_VALIDATED_TOKEN=${AAP_VALIDATED_TOKEN}
 
 
-step10: 
+. step10:
++ 
       export ee_tag=2.1.0
       podman tag localhost/test:latest quay.io/agnosticd/ee-ubi9-aap2.5:${ee_tag}
       podman images
