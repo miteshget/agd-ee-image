@@ -1,0 +1,99 @@
+ARG EE_BASE_IMAGE="registry.access.redhat.com/ubi9/ubi"
+
+# Building base
+FROM $EE_BASE_IMAGE as base
+USER root
+WORKDIR /root
+RUN dnf install -y python3-pip \
+        bind-utils \
+        findutils \
+        gcc \
+        git \
+        gnupg2 \
+        jq \
+        krb5-devel \
+        krb5-libs \
+        libcurl-devel \
+        libxml2-devel \
+        openssl \
+        openssl-devel \
+        python3 \
+        python3-devel \
+        rsync \
+        sshpass \
+        tar \
+        unzip \
+        vim \
+        curl-minimal \
+        wget
+RUN dnf clean all
+RUN pip install --no-cache-dir --upgrade pip
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Build Galaxy from base
+FROM base as galaxy
+ARG ANSIBLE_GALAXY_SERVER_CERTIFIED_TOKEN
+ARG ANSIBLE_GALAXY_SERVER_VALIDATED_TOKEN
+COPY ansible.cfg /root/.ansible.cfg
+COPY requirements.yml /tmp/requirements.yml
+RUN ansible-galaxy role install -r /tmp/requirements.yml --roles-path "/usr/share/ansible/roles"
+RUN ansible-galaxy collection install -vv -r /tmp/requirements.yml --collections-path "/usr/share/ansible/collections"
+
+
+# Build final from base
+FROM base as final
+COPY --from=galaxy /usr/share/ansible /usr/share/ansible
+RUN pip install --no-cache-dir -r /usr/share/ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+RUN pip install --no-cache-dir -r /usr/share/ansible/collections/ansible_collections/community/vmware/requirements.txt
+RUN pip install --no-cache-dir -r /usr/share/ansible/collections/ansible_collections/google/cloud/requirements.txt
+RUN pip install --no-cache-dir -r /usr/share/ansible/collections/ansible_collections/kubernetes/core/requirements.txt
+
+# AWS, Bitwarden, OC client
+COPY install_binaries.sh /tmp/install_binaries.sh
+RUN /tmp/install_binaries.sh
+
+# Azure CLI
+RUN rpm --import https://packages.microsoft.com/keys/microsoft.asc \
+    && dnf install -y https://packages.microsoft.com/config/rhel/9/packages-microsoft-prod.rpm \
+    && dnf install -y azure-cli \
+    && dnf clean all
+
+RUN rm -rf /tmp/* /root/.cache /root/*
+
+# In OpenShift, container will run as a random uid number and gid 0. Make sure things
+# are writeable by the root group.
+RUN for dir in \
+      /home/runner/.ansible \
+      /home/runner/.ansible/tmp \
+      /home/runner \
+      /runner/env \
+      /runner/inventory \
+      /runner/project \
+      /runner/artifacts \
+      /runner/requirements_collections/ansible_collections \
+      /runner ; \
+    do mkdir -m 0775 -p $dir ; chmod -R g+rwx $dir ; chgrp -R root $dir ; done && \
+    for file in \
+      /home/runner/.ansible/galaxy_token \
+      /etc/passwd \
+      /etc/group ; \
+    do touch $file ; chmod g+rw $file ; chgrp root $file ; done
+
+ENV HOME=/home/runner
+COPY entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod 755 /usr/local/bin/entrypoint
+WORKDIR /runner
+
+ENTRYPOINT ["entrypoint"]
+CMD ["/usr/local/bin/ansible-runner", "run", "/runner"]
+
+ENV DESCRIPTION="Community Execution Environment for AgnosticD and Red Hat Demo Platform"
+LABEL ansible-execution-environment=true \
+      name="agnosticd/ee-multicloud" \
+      maintainer="Red Hat CoP" \
+      description="${DESCRIPTION}" \
+      summary="${DESCRIPTION}"
+
+# Add report script for changelog and troubleshooting
+COPY ee-report.sh /usr/local/bin/ee-report

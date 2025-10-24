@@ -1,0 +1,91 @@
+---
+
+collections:
+# boto3 >= 1.18.0
+# botocore >= 1.21.0
+- name: amazon.aws
+
+- name: ansible.netcommon
+- name: ansible.posix
+- name: ansible.utils
+- name: ansible.windows
+
+- name: awx.awx
+
+# requirements-azure.txt from the collection
+- name: azure.azcollection
+
+# boto3 >= 1.18.0
+# botocore >= 1.21.0
+- name: community.aws
+
+# cryptography
+- name: community.crypto
+- name: community.general
+
+# kubernetes>=12.0.0
+# requests-oauthlib
+- name: community.okd
+
+# requirements.txt from the collection
+- name: community.vmware
+- name: vmware.vmware_rest
+
+- name: containers.podman
+
+- name: equinix.metal
+# For historic compability
+- name: equinix.cloud
+
+# requirements.txt from the collection
+- name: google.cloud
+
+# Needs awx.awx collection
+- name: infra.controller_configuration
+- name: infra.eda_configuration
+
+- name: ibm.cloudcollection
+
+# kubernetes>=12.0.0
+# requests-oauthlib
+# jsonpatch
+# From requirements.txt
+- name: kubernetes.core
+
+- name: kubevirt.core
+
+# openstacksdk>=1.0.0
+- name: openstack.cloud
+
+# -----------------------------------------
+# Red Hat certified collections
+# -----------------------------------------
+- name: ansible.controller
+- name: ansible.eda
+- name: ansible.hub
+- name: ansible.platform
+- name: cisco.ios
+- name: cisco.iosxr
+- name: cisco.nxos
+- name: redhat.rhbk
+- name: redhat.trusted_profile_analyzer
+- name: redhat.insights
+- name: redhat.rhel_system_roles
+- name: redhat.artifact_signer
+- name: redhat.satellite
+- name: redhat.openshift
+- name: redhat.openshift_virtualization
+# -----------------------------------------
+
+# -----------------------------------------
+# Additional Community collections
+# -----------------------------------------
+- name: chocolatey.chocolatey
+- name: community.windows
+- name: community.mysql
+- name: infra.ah_configuration
+- name: infra.aap_configuration
+- name: https://github.com/rhpds/assisted_installer.git
+  type: git
+  version: "v0.0.1"
+# -----------------------------------------
