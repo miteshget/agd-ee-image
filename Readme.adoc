@@ -107,7 +107,7 @@ podman push quay.io/agnosticd/ee-ubi9-aap2.5:${ee_tag}
 == Verification
 
 Once pushed, verify your image on Quay.io under your repository:
-👉 https://quay.io/repository/agnosticd/ee-ubi9-aap2.5
+👉 https://quay.io/xxxxxxxx/ee-ubi9-aap2.5
 
 == Summary
 
